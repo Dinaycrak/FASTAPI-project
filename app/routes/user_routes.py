@@ -1,35 +1,32 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from controllers.user_controller import UserController
 from models.user_model import User
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["Users"])
 
-nuevo_usuario = UserController()
+user_controller = UserController()
 
-
-@router.post("/create_user")
+@router.post("/", response_model=dict)
 async def create_user(user: User):
-    rpta = nuevo_usuario.create_user(user)
-    return rpta
+    return user_controller.create_user(user)
 
 
-@router.get("/get_user/{user_id}",response_model=User)
+@router.get("/{user_id}", response_model=User)
 async def get_user(user_id: int):
-    rpta = nuevo_usuario.get_user(user_id)
-    return rpta
+    return user_controller.get_user(user_id)
 
-@router.get("/get_users/")
+
+@router.get("/", response_model=dict)
 async def get_users():
-    rpta = nuevo_usuario.get_users()
-    return rpta
+    return user_controller.get_users()
 
-@router.put("/update_user/{user_id}",response_model=User)
-async def update_user(user_id: int):
-    rpta = nuevo_usuario.update_user(user_id)
-    return rpta
 
-@router.delete("/delete_user/{user_id}")
+
+@router.put("/{user_id}", response_model=dict)
+async def update_user(user_id: int, user: User):
+    return user_controller.update_user(user_id, user)
+
+
+@router.delete("/{user_id}", response_model=dict)
 async def delete_user(user_id: int):
-    rpta = nuevo_usuario.delete_user(user_id)
-    return rpta
-
+    return user_controller.delete_user(user_id)

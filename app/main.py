@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from routes.user_routes import router as user_router
-from routes.user_routes import router as perfil_router
+from routes.perfil_router import router as perfil_router
 from routes.client_router import router as client_router
-from routes.document_type_router import router as document_type_router
+from app.routes.document_type_routes import router as document_type_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
