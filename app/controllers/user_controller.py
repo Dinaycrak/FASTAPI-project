@@ -12,7 +12,7 @@ class UserController:
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            # 🔎 Validar que el rol exista (FK)
+            #Validar que el rol exista (FK)
             if user.id_rol is not None:
                 cursor.execute("SELECT id FROM roles WHERE id = %s", (user.id_rol,))
                 rol = cursor.fetchone()
@@ -146,14 +146,14 @@ class UserController:
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            # 🔎 Verificar que el usuario exista
+            #Verificar que el usuario exista
             cursor.execute("SELECT id FROM usuarios WHERE id = %s", (user_id,))
             existing_user = cursor.fetchone()
 
             if not existing_user:
                 raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-            # 🔎 Validar FK rol si se envía
+            #Validar FK rol si se envía
             if user.id_rol is not None:
                 cursor.execute("SELECT id FROM roles WHERE id = %s", (user.id_rol,))
                 rol = cursor.fetchone()

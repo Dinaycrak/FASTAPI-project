@@ -1,94 +1,92 @@
 import psycopg2
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.rol_model import Rol
+from models.delivery_status_model import DeliveryStatus
 from fastapi.encoders import jsonable_encoder
 
 
-class RolController:
+class DeliveryStatusController:
 
-    def create_rol(self, rol: Rol):
+    def create_delivery_status(self, delivery_status: DeliveryStatus):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                INSERT INTO rol (nombre_rol, descripcion)
+                INSERT INTO estado_entrega (nombre_estado, descripcion)
                 VALUES (%s, %s)
-                RETURNING id_rol
+                RETURNING id_estado_entrega
             """, (
-                rol.nombre_rol,
-                rol.descripcion
+                delivery_status.nombre_estado,
+                delivery_status.descripcion
             ))
 
             new_id = cursor.fetchone()[0]
             conn.commit()
 
             return jsonable_encoder({
-                "id_rol": new_id,
-                "nombre_rol": rol.nombre_rol,
-                "descripcion": rol.descripcion
+                "id_estado_entrega": new_id,
+                "nombre_estado": delivery_status.nombre_estado,
+                "descripcion": delivery_status.descripcion
             })
 
         except psycopg2.Error as err:
             if conn:
                 conn.rollback()
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()
 
 
-    def get_rol(self, rol_id: int):
+    def get_delivery_status(self, delivery_status_id: int):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                SELECT id_rol, nombre_rol, descripcion
-                FROM rol
-                WHERE id_rol = %s
-            """, (rol_id,))
+                SELECT id_estado_entrega, nombre_estado, descripcion
+                FROM estado_entrega
+                WHERE id_estado_entrega = %s
+            """, (delivery_status_id,))
 
             result = cursor.fetchone()
 
             if not result:
-                raise HTTPException(status_code=404, detail="Rol no encontrado")
+                raise HTTPException(status_code=404, detail="Estado de entrega no encontrado")
 
             return jsonable_encoder({
-                "id_rol": result[0],
-                "nombre_rol": result[1],
+                "id_estado_entrega": result[0],
+                "nombre_estado": result[1],
                 "descripcion": result[2]
             })
 
         except psycopg2.Error as err:
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()
 
 
-    def get_roles(self):
+    def get_delivery_statuses(self):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                SELECT id_rol, nombre_rol, descripcion
-                FROM rol
+                SELECT id_estado_entrega, nombre_estado, descripcion
+                FROM estado_entrega
             """)
 
             result = cursor.fetchall()
 
             payload = [
                 {
-                    "id_rol": row[0],
-                    "nombre_rol": row[1],
+                    "id_estado_entrega": row[0],
+                    "nombre_estado": row[1],
                     "descripcion": row[2]
                 }
                 for row in result
@@ -98,83 +96,80 @@ class RolController:
 
         except psycopg2.Error as err:
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()
 
 
-    def update_rol(self, rol_id: int, rol: Rol):
+    def update_delivery_status(self, delivery_status_id: int, delivery_status: DeliveryStatus):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                SELECT 1 FROM rol
-                WHERE id_rol = %s
-            """, (rol_id,))
+                SELECT 1 FROM estado_entrega
+                WHERE id_estado_entrega = %s
+            """, (delivery_status_id,))
 
             if not cursor.fetchone():
-                raise HTTPException(status_code=404, detail="Rol no encontrado")
+                raise HTTPException(status_code=404, detail="Estado de entrega no encontrado")
 
             cursor.execute("""
-                UPDATE rol
-                SET nombre_rol = %s,
+                UPDATE estado_entrega
+                SET nombre_estado = %s,
                     descripcion = %s
-                WHERE id_rol = %s
+                WHERE id_estado_entrega = %s
             """, (
-                rol.nombre_rol,
-                rol.descripcion,
-                rol_id
+                delivery_status.nombre_estado,
+                delivery_status.descripcion,
+                delivery_status_id
             ))
 
             conn.commit()
 
             return jsonable_encoder({
-                "id_rol": rol_id,
-                "nombre_rol": rol.nombre_rol,
-                "descripcion": rol.descripcion
+                "id_estado_entrega": delivery_status_id,
+                "nombre_estado": delivery_status.nombre_estado,
+                "descripcion": delivery_status.descripcion
             })
 
         except psycopg2.Error as err:
             if conn:
                 conn.rollback()
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()
 
 
-    def delete_rol(self, rol_id: int):
+    def delete_delivery_status(self, delivery_status_id: int):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                SELECT 1 FROM rol
-                WHERE id_rol = %s
-            """, (rol_id,))
+                SELECT 1 FROM estado_entrega
+                WHERE id_estado_entrega = %s
+            """, (delivery_status_id,))
 
             if not cursor.fetchone():
-                raise HTTPException(status_code=404, detail="Rol no encontrado")
+                raise HTTPException(status_code=404, detail="Estado de entrega no encontrado")
 
             cursor.execute("""
-                DELETE FROM rol
-                WHERE id_rol = %s
-            """, (rol_id,))
+                DELETE FROM estado_entrega
+                WHERE id_estado_entrega = %s
+            """, (delivery_status_id,))
 
             conn.commit()
 
-            return {"message": "Rol eliminado correctamente"}
+            return {"message": "Estado de entrega eliminado correctamente"}
 
         except psycopg2.Error as err:
             if conn:
                 conn.rollback()
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()

@@ -1,94 +1,92 @@
 import psycopg2
 from fastapi import HTTPException
 from config.db_config import get_db_connection
-from models.rol_model import Rol
+from models.research_line_model import ResearchLine
 from fastapi.encoders import jsonable_encoder
 
 
-class RolController:
+class ResearchLineController:
 
-    def create_rol(self, rol: Rol):
+    def create_research_line(self, research_line: ResearchLine):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                INSERT INTO rol (nombre_rol, descripcion)
+                INSERT INTO linea_investigacion (nombre_linea, descripcion)
                 VALUES (%s, %s)
-                RETURNING id_rol
+                RETURNING id_linea
             """, (
-                rol.nombre_rol,
-                rol.descripcion
+                research_line.nombre_linea,
+                research_line.descripcion
             ))
 
             new_id = cursor.fetchone()[0]
             conn.commit()
 
             return jsonable_encoder({
-                "id_rol": new_id,
-                "nombre_rol": rol.nombre_rol,
-                "descripcion": rol.descripcion
+                "id_linea": new_id,
+                "nombre_linea": research_line.nombre_linea,
+                "descripcion": research_line.descripcion
             })
 
         except psycopg2.Error as err:
             if conn:
                 conn.rollback()
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()
 
 
-    def get_rol(self, rol_id: int):
+    def get_research_line(self, research_line_id: int):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                SELECT id_rol, nombre_rol, descripcion
-                FROM rol
-                WHERE id_rol = %s
-            """, (rol_id,))
+                SELECT id_linea, nombre_linea, descripcion
+                FROM linea_investigacion
+                WHERE id_linea = %s
+            """, (research_line_id,))
 
             result = cursor.fetchone()
 
             if not result:
-                raise HTTPException(status_code=404, detail="Rol no encontrado")
+                raise HTTPException(status_code=404, detail="Línea no encontrada")
 
             return jsonable_encoder({
-                "id_rol": result[0],
-                "nombre_rol": result[1],
+                "id_linea": result[0],
+                "nombre_linea": result[1],
                 "descripcion": result[2]
             })
 
         except psycopg2.Error as err:
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()
 
 
-    def get_roles(self):
+    def get_research_lines(self):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                SELECT id_rol, nombre_rol, descripcion
-                FROM rol
+                SELECT id_linea, nombre_linea, descripcion
+                FROM linea_investigacion
             """)
 
             result = cursor.fetchall()
 
             payload = [
                 {
-                    "id_rol": row[0],
-                    "nombre_rol": row[1],
+                    "id_linea": row[0],
+                    "nombre_linea": row[1],
                     "descripcion": row[2]
                 }
                 for row in result
@@ -98,83 +96,80 @@ class RolController:
 
         except psycopg2.Error as err:
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()
 
 
-    def update_rol(self, rol_id: int, rol: Rol):
+    def update_research_line(self, research_line_id: int, research_line: ResearchLine):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                SELECT 1 FROM rol
-                WHERE id_rol = %s
-            """, (rol_id,))
+                SELECT 1 FROM linea_investigacion
+                WHERE id_linea = %s
+            """, (research_line_id,))
 
             if not cursor.fetchone():
-                raise HTTPException(status_code=404, detail="Rol no encontrado")
+                raise HTTPException(status_code=404, detail="Línea no encontrada")
 
             cursor.execute("""
-                UPDATE rol
-                SET nombre_rol = %s,
+                UPDATE linea_investigacion
+                SET nombre_linea = %s,
                     descripcion = %s
-                WHERE id_rol = %s
+                WHERE id_linea = %s
             """, (
-                rol.nombre_rol,
-                rol.descripcion,
-                rol_id
+                research_line.nombre_linea,
+                research_line.descripcion,
+                research_line_id
             ))
 
             conn.commit()
 
             return jsonable_encoder({
-                "id_rol": rol_id,
-                "nombre_rol": rol.nombre_rol,
-                "descripcion": rol.descripcion
+                "id_linea": research_line_id,
+                "nombre_linea": research_line.nombre_linea,
+                "descripcion": research_line.descripcion
             })
 
         except psycopg2.Error as err:
             if conn:
                 conn.rollback()
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()
 
 
-    def delete_rol(self, rol_id: int):
+    def delete_research_line(self, research_line_id: int):
         conn = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
             cursor.execute("""
-                SELECT 1 FROM rol
-                WHERE id_rol = %s
-            """, (rol_id,))
+                SELECT 1 FROM linea_investigacion
+                WHERE id_linea = %s
+            """, (research_line_id,))
 
             if not cursor.fetchone():
-                raise HTTPException(status_code=404, detail="Rol no encontrado")
+                raise HTTPException(status_code=404, detail="Línea no encontrada")
 
             cursor.execute("""
-                DELETE FROM rol
-                WHERE id_rol = %s
-            """, (rol_id,))
+                DELETE FROM linea_investigacion
+                WHERE id_linea = %s
+            """, (research_line_id,))
 
             conn.commit()
 
-            return {"message": "Rol eliminado correctamente"}
+            return {"message": "Línea eliminada correctamente"}
 
         except psycopg2.Error as err:
             if conn:
                 conn.rollback()
             raise HTTPException(status_code=500, detail=str(err))
-
         finally:
             if conn:
                 conn.close()
