@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from models.status_history_model import StatusHistory
-from config.db_config import get_connection
+from config.db_config import get_db_connection as get_connection
 
 
 def get_all_status_history():

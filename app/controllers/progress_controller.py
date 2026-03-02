@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from models.progress_model import Progress
-from config.db_config import get_connection
+from config.db_config import get_db_connection as get_connection
 
 
 def get_all_progress():
