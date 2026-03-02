@@ -13,14 +13,14 @@ class StudentController:
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            cursor.execute("SELECT id FROM usuarios WHERE id = %s", (student.id_usuario,))
+            cursor.execute("SELECT id FROM usuario WHERE id = %s", (student.id_usuario,))
             user = cursor.fetchone()
 
             if not user:
                 raise HTTPException(status_code=400, detail="El usuario no existe")
 
             cursor.execute("""
-                INSERT INTO estudiantes (id_usuario, semestre)
+                INSERT INTO estudiante (id_usuario, semestre)
                 VALUES (%s, %s)
             """, (
                 student.id_usuario,
@@ -49,7 +49,7 @@ class StudentController:
 
             cursor.execute("""
                 SELECT id_usuario, semestre
-                FROM estudiantes
+                FROM estudiante
                 WHERE id_usuario = %s
             """, (student_id,))
 
@@ -81,7 +81,7 @@ class StudentController:
 
             cursor.execute("""
                 SELECT id_usuario, semestre
-                FROM estudiantes
+                FROM estudiante
             """)
 
             results = cursor.fetchall()
@@ -113,14 +113,14 @@ class StudentController:
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            cursor.execute("SELECT id_usuario FROM estudiantes WHERE id_usuario = %s", (student_id,))
+            cursor.execute("SELECT id_usuario FROM estudiante WHERE id_usuario = %s", (student_id,))
             existing_student = cursor.fetchone()
 
             if not existing_student:
                 raise HTTPException(status_code=404, detail="Estudiante no encontrado")
 
             cursor.execute("""
-                UPDATE estudiantes
+                UPDATE estudiante
                 SET semestre = %s
                 WHERE id_usuario = %s
             """, (
@@ -148,13 +148,13 @@ class StudentController:
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            cursor.execute("SELECT id_usuario FROM estudiantes WHERE id_usuario = %s", (student_id,))
+            cursor.execute("SELECT id_usuario FROM estudiante WHERE id_usuario = %s", (student_id,))
             existing_student = cursor.fetchone()
 
             if not existing_student:
                 raise HTTPException(status_code=404, detail="Estudiante no encontrado")
 
-            cursor.execute("DELETE FROM estudiantes WHERE id_usuario = %s", (student_id,))
+            cursor.execute("DELETE FROM estudiante WHERE id_usuario = %s", (student_id,))
             conn.commit()
 
             return {"resultado": "Estudiante eliminado correctamente"}

@@ -32,7 +32,7 @@ class ProjectController:
                     raise HTTPException(status_code=400, detail="La línea de investigación no existe")
 
             cursor.execute("""
-                INSERT INTO proyectos
+                INSERT INTO proyecto
                 (nombre_proyecto, descripcion, fecha_inicio, fecha_fin,
                  id_estado, id_linea, creado_por, fecha_creacion)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
@@ -77,7 +77,7 @@ class ProjectController:
                        fecha_inicio, fecha_fin,
                        id_estado, id_linea,
                        creado_por, fecha_creacion
-                FROM proyectos
+                FROM proyecto
                 WHERE id_proyecto = %s
             """, (project_id,))
 
@@ -119,7 +119,7 @@ class ProjectController:
                        fecha_inicio, fecha_fin,
                        id_estado, id_linea,
                        creado_por, fecha_creacion
-                FROM proyectos
+                FROM proyecto
             """)
 
             results = cursor.fetchall()
@@ -159,7 +159,7 @@ class ProjectController:
             cursor = conn.cursor()
 
             cursor.execute(
-                "SELECT id_proyecto FROM proyectos WHERE id_proyecto = %s",
+                "SELECT id_proyecto FROM proyecto WHERE id_proyecto = %s",
                 (project_id,)
             )
             existing = cursor.fetchone()
@@ -168,7 +168,7 @@ class ProjectController:
                 raise HTTPException(status_code=404, detail="Proyecto no encontrado")
 
             cursor.execute("""
-                UPDATE proyectos
+                UPDATE proyecto
                 SET nombre_proyecto=%s,
                     descripcion=%s,
                     fecha_inicio=%s,
@@ -211,7 +211,7 @@ class ProjectController:
             cursor = conn.cursor()
 
             cursor.execute(
-                "SELECT id_proyecto FROM proyectos WHERE id_proyecto = %s",
+                "SELECT id_proyecto FROM proyecto WHERE id_proyecto = %s",
                 (project_id,)
             )
             existing = cursor.fetchone()
@@ -220,7 +220,7 @@ class ProjectController:
                 raise HTTPException(status_code=404, detail="Proyecto no encontrado")
 
             cursor.execute(
-                "DELETE FROM proyectos WHERE id_proyecto = %s",
+                "DELETE FROM proyecto WHERE id_proyecto = %s",
                 (project_id,)
             )
 

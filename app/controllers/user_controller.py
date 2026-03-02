@@ -14,13 +14,13 @@ class UserController:
 
             #Validar que el rol exista (FK)
             if user.id_rol is not None:
-                cursor.execute("SELECT id FROM roles WHERE id = %s", (user.id_rol,))
+                cursor.execute("SELECT id FROM rol WHERE id = %s", (user.id_rol,))
                 rol = cursor.fetchone()
                 if not rol:
                     raise HTTPException(status_code=400, detail="El rol no existe")
 
             cursor.execute("""
-                INSERT INTO usuarios
+                INSERT INTO usuario
                 (nombre, apellido, cedula, edad, usuario, password_hash,
                  telefono, id_rol, estado_cuenta, fecha_registro)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -62,7 +62,7 @@ class UserController:
                 SELECT id, nombre, apellido, cedula, edad, usuario,
                        password_hash, telefono, id_rol,
                        estado_cuenta, fecha_registro
-                FROM usuarios
+                FROM usuario
                 WHERE id = %s
             """, (user_id,))
 
@@ -104,7 +104,7 @@ class UserController:
                 SELECT id, nombre, apellido, cedula, edad, usuario,
                        password_hash, telefono, id_rol,
                        estado_cuenta, fecha_registro
-                FROM usuarios
+                FROM usuario
             """)
 
             results = cursor.fetchall()
@@ -147,7 +147,7 @@ class UserController:
             cursor = conn.cursor()
 
             #Verificar que el usuario exista
-            cursor.execute("SELECT id FROM usuarios WHERE id = %s", (user_id,))
+            cursor.execute("SELECT id FROM usuario WHERE id = %s", (user_id,))
             existing_user = cursor.fetchone()
 
             if not existing_user:
@@ -161,7 +161,7 @@ class UserController:
                     raise HTTPException(status_code=400, detail="El rol no existe")
 
             cursor.execute("""
-                UPDATE usuarios
+                UPDATE usuario
                 SET nombre=%s,
                     apellido=%s,
                     cedula=%s,
@@ -207,13 +207,13 @@ class UserController:
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            cursor.execute("SELECT id FROM usuarios WHERE id = %s", (user_id,))
+            cursor.execute("SELECT id FROM usuario WHERE id = %s", (user_id,))
             existing_user = cursor.fetchone()
 
             if not existing_user:
                 raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-            cursor.execute("DELETE FROM usuarios WHERE id = %s", (user_id,))
+            cursor.execute("DELETE FROM usuario WHERE id = %s", (user_id,))
             conn.commit()
 
             return {"resultado": "Usuario eliminado correctamente"}

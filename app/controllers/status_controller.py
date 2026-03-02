@@ -14,7 +14,7 @@ class StatusController:
             cursor = conn.cursor()
 
             cursor.execute("""
-                INSERT INTO estados (nombre_estado, descripcion)
+                INSERT INTO estado (nombre_estado, descripcion)
                 VALUES (%s, %s)
                 RETURNING id_estado
             """, (
@@ -48,7 +48,7 @@ class StatusController:
 
             cursor.execute("""
                 SELECT id_estado, nombre_estado, descripcion
-                FROM estados
+                FROM estado
                 WHERE id_estado = %s
             """, (status_id,))
 
@@ -81,7 +81,7 @@ class StatusController:
 
             cursor.execute("""
                 SELECT id_estado, nombre_estado, descripcion
-                FROM estados
+                FROM estado
             """)
 
             results = cursor.fetchall()
@@ -114,14 +114,14 @@ class StatusController:
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            cursor.execute("SELECT id_estado FROM estados WHERE id_estado = %s", (status_id,))
+            cursor.execute("SELECT id_estado FROM estado WHERE id_estado = %s", (status_id,))
             existing_status = cursor.fetchone()
 
             if not existing_status:
                 raise HTTPException(status_code=404, detail="Estado no encontrado")
 
             cursor.execute("""
-                UPDATE estados
+                UPDATE estado
                 SET nombre_estado = %s,
                     descripcion = %s
                 WHERE id_estado = %s
@@ -151,13 +151,13 @@ class StatusController:
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            cursor.execute("SELECT id_estado FROM estados WHERE id_estado = %s", (status_id,))
+            cursor.execute("SELECT id_estado FROM estado WHERE id_estado = %s", (status_id,))
             existing_status = cursor.fetchone()
 
             if not existing_status:
                 raise HTTPException(status_code=404, detail="Estado no encontrado")
 
-            cursor.execute("DELETE FROM estados WHERE id_estado = %s", (status_id,))
+            cursor.execute("DELETE FROM estado WHERE id_estado = %s", (status_id,))
             conn.commit()
 
             return {"resultado": "Estado eliminado correctamente"}

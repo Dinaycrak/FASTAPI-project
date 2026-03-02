@@ -13,29 +13,33 @@ class DocumentController:
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # Validar proyecto
             cursor.execute(
-                "SELECT id_proyecto FROM proyectos WHERE id_proyecto = %s",
+                "SELECT id_proyecto FROM proyecto WHERE id_proyecto = %s",
                 (document.id_proyecto,)
             )
             if not cursor.fetchone():
                 raise HTTPException(status_code=400, detail="El proyecto no existe")
 
+            # Validar usuario
             cursor.execute(
-                "SELECT id FROM usuarios WHERE id = %s",
+                "SELECT id_usuario FROM usuario WHERE id_usuario = %s",
                 (document.id_usuario,)
             )
             if not cursor.fetchone():
                 raise HTTPException(status_code=400, detail="El usuario no existe")
 
+            # Validar tipo documento
             cursor.execute(
-                "SELECT id FROM tipos_documento WHERE id = %s",
+                "SELECT id_tipo_documento FROM tipo_documento WHERE id_tipo_documento = %s",
                 (document.id_tipo_documento,)
             )
             if not cursor.fetchone():
                 raise HTTPException(status_code=400, detail="El tipo de documento no existe")
 
+            # Insertar documento
             cursor.execute("""
-                INSERT INTO documentos
+                INSERT INTO documento
                 (id_proyecto, id_usuario, id_tipo_documento,
                  nombre_archivo, ruta_archivo, descripcion, fecha_subida)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -78,7 +82,7 @@ class DocumentController:
                 SELECT id_documento, id_proyecto, id_usuario,
                        id_tipo_documento, nombre_archivo,
                        ruta_archivo, descripcion, fecha_subida
-                FROM documentos
+                FROM documento
                 WHERE id_documento = %s
             """, (document_id,))
 
@@ -118,13 +122,13 @@ class DocumentController:
                 SELECT id_documento, id_proyecto, id_usuario,
                        id_tipo_documento, nombre_archivo,
                        ruta_archivo, descripcion, fecha_subida
-                FROM documentos
+                FROM documento
             """)
 
             results = cursor.fetchall()
 
             if not results:
-                raise HTTPException(status_code=404, detail="No hay documentos registrados")
+                return {"resultado": []}
 
             documents = []
 
@@ -157,14 +161,14 @@ class DocumentController:
             cursor = conn.cursor()
 
             cursor.execute(
-                "SELECT id_documento FROM documentos WHERE id_documento = %s",
+                "SELECT id_documento FROM documento WHERE id_documento = %s",
                 (document_id,)
             )
             if not cursor.fetchone():
                 raise HTTPException(status_code=404, detail="Documento no encontrado")
 
             cursor.execute("""
-                UPDATE documentos
+                UPDATE documento
                 SET id_proyecto=%s,
                     id_usuario=%s,
                     id_tipo_documento=%s,
@@ -205,14 +209,14 @@ class DocumentController:
             cursor = conn.cursor()
 
             cursor.execute(
-                "SELECT id_documento FROM documentos WHERE id_documento = %s",
+                "SELECT id_documento FROM documento WHERE id_documento = %s",
                 (document_id,)
             )
             if not cursor.fetchone():
                 raise HTTPException(status_code=404, detail="Documento no encontrado")
 
             cursor.execute(
-                "DELETE FROM documentos WHERE id_documento = %s",
+                "DELETE FROM documento WHERE id_documento = %s",
                 (document_id,)
             )
 

@@ -7,7 +7,7 @@ def get_all_comments():
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM comentarios")
+    cursor.execute("SELECT * FROM comentario")
     result = cursor.fetchall()
 
     cursor.close()
@@ -21,7 +21,7 @@ def get_comment_by_id(id_comentario: int):
     cursor = connection.cursor(dictionary=True)
 
     cursor.execute(
-        "SELECT * FROM comentarios WHERE id_comentario = %s",
+        "SELECT * FROM comentario WHERE id_comentario = %s",
         (id_comentario,)
     )
 
@@ -41,7 +41,7 @@ def create_comment(comment: Comments):
     cursor = connection.cursor()
 
     sql = """
-        INSERT INTO comentarios (
+        INSERT INTO comentario (
             id_avance,
             id_usuario,
             contenido,
@@ -104,7 +104,7 @@ def delete_comment(id_comentario: int):
     cursor = connection.cursor()
 
     cursor.execute(
-        "DELETE FROM comentarios WHERE id_comentario = %s",
+        "DELETE FROM comentario WHERE id_comentario = %s",
         (id_comentario,)
     )
 
